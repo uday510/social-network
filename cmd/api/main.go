@@ -1,14 +1,16 @@
 package main
 
 import (
-	"go-crud-app/internal/db"
-	"go-crud-app/internal/env"
-	"go-crud-app/internal/store"
+	"github.com/uday510/go-crud-app/internal/db"
+	"github.com/uday510/go-crud-app/internal/env"
+	"github.com/uday510/go-crud-app/internal/store"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 )
+
+const version = "0.0.1"
 
 func main() {
 	log.Println("loading configuration...")
@@ -21,6 +23,7 @@ func main() {
 			maxIdleConns: env.GetInt("DB_MAX_IDLE_CONNECTIONS", 30),
 			maxIdleTime:  env.GetString("DB_MAX_IDLE_TIME", "15m"),
 		},
+		env: env.GetString("ENV", "development"),
 	}
 
 	log.Printf("configuration loaded: addr=%s, db_addr=%s", cfg.addr, cfg.db.addr)

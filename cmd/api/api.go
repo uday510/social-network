@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"go-crud-app/internal/store"
+	"github.com/uday510/go-crud-app/internal/store"
 	"log"
 	"net/http"
 	"time"
@@ -24,6 +24,7 @@ type dbConfig struct {
 type config struct {
 	addr string
 	db   dbConfig
+	env  string
 }
 
 func (app *application) mount() http.Handler {
@@ -38,6 +39,10 @@ func (app *application) mount() http.Handler {
 
 	r.Route("/v1", func(r chi.Router) {
 		r.Get("/health", app.healthCheckHandler)
+
+		r.Route("/posts", func(r chi.Router) {
+			r.Post("/", app.createPostHandler)
+		})
 	})
 
 	return r

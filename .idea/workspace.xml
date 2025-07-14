@@ -5,21 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a0ec1aab-d5bf-4efc-b65b-41fc378b44b6" name="Changes" comment="add tcp server">
-      <change afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/bin/main" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/db/db.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/store/posts.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/store/storage.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/store/users.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/scripts/db_init.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/api/json.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/api/posts.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/main" beforeDir="false" afterPath="$PROJECT_DIR$/bin/main" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/api/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/api/api.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/api/health.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/api/health.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/api/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/api/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/env.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/env/env.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/store/posts.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/store/posts.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,8 +25,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Go File" />
         <option value="Dockerfile" />
+        <option value="Go File" />
       </list>
     </option>
   </component>
@@ -73,7 +66,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "DefaultGoTemplateProperty": "Go File",
-    "Go Build.go build go-crud-app.executor": "Run",
+    "Go Build.go build go-crud-app.executor": "Debug",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",

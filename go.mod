@@ -1,4 +1,4 @@
-module go-crud-app
+module github.com/uday510/go-crud-app
 
 go 1.24.4
 
