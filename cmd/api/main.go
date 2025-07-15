@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/go-playground/validator/v10"
 	"github.com/uday510/go-crud-app/internal/db"
 	"github.com/uday510/go-crud-app/internal/env"
 	"github.com/uday510/go-crud-app/internal/store"
@@ -9,6 +10,12 @@ import (
 	"os/signal"
 	"syscall"
 )
+
+var Validate *validator.Validate
+
+func init() {
+	Validate = validator.New(validator.WithRequiredStructEnabled())
+}
 
 const version = "0.0.1"
 
@@ -29,6 +36,7 @@ func main() {
 	log.Printf("configuration loaded: addr=%s, db_addr=%s", cfg.addr, cfg.db.addr)
 
 	log.Println("initializing database connection...")
+
 	database, err := db.New(cfg.db.addr, cfg.db.maxOpenConns, cfg.db.maxIdleConns, cfg.db.maxIdleTime)
 	if err != nil {
 		log.Fatalf("failed to create database pool: %v", err)

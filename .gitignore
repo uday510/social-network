@@ -37,4 +37,3 @@ migrations.lock
 *.gz
 
 # Tools or binaries
-migrate

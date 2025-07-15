@@ -1,0 +1,4 @@
+ALTER TABLE
+    POSTS
+ADD
+    COLUMN version INT DEFAULT 0
