@@ -17,3 +17,8 @@ migrate-up:
 # Run down migrations (you can specify how many, e.g., make migrate-down steps=1)
 migrate-down:
 	migrate -path=$(MIGRATIONS_PATH) -database="$(DB_MIGRATOR_ADDR)" down $(steps)
+
+
+.PHONY: seed
+seed:
+	@go run cmd/migrate/seed/main.go

@@ -4,10 +4,12 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"time"
 )
 
 var (
-	ErrNotFound = errors.New("resource not found")
+	ErrNotFound          = errors.New("resource not found")
+	QueryTimeoutDuration = time.Second * 300
 )
 
 type Storage struct {
@@ -22,6 +24,7 @@ type Storage struct {
 	}
 	Comments interface {
 		GetByPostID(ctx context.Context, postID int64) ([]Comment, error)
+		Create(context.Context, *Comment) error
 	}
 }
 

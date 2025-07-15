@@ -1,0 +1,31 @@
+package main
+
+import (
+	"github.com/uday510/go-crud-app/internal/db"
+	"github.com/uday510/go-crud-app/internal/env"
+	store2 "github.com/uday510/go-crud-app/internal/store"
+	"log"
+)
+
+func main() {
+	log.Println("Starting application...")
+
+	addr := env.GetString("DB_ADDR", "postgres://user:password@localhost/social?sslmode=disable")
+	log.Println("Connecting to DB...")
+
+	conn, err := db.New(addr, 3, 3, "15m")
+	if err != nil {
+		log.Fatalf("Failed to connect to DB: %v", err)
+	}
+	log.Println("Connected to DB")
+
+	store := store2.NewStorage(conn)
+	log.Println("Initialized storage layer")
+
+	log.Println("Seeding database...")
+	err = db.Seed(store)
+	if err != nil {
+		log.Fatalf("Seeding failed: %v", err)
+	}
+	log.Println("Database seeding complete.")
+}
