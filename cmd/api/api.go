@@ -54,12 +54,22 @@ func (app *application) mount() http.Handler {
 		r.Route("/users", func(r chi.Router) {
 
 			r.Route("/{userID}", func(r chi.Router) {
-				r.Get("/", app.getUserHandler)
+				r.Use(app.userContextMiddleware)
 
+				r.Get("/", app.getUserHandler)
 				r.Put("/follow", app.followUserHandler)
 				r.Put("/unfollow", app.unFollowUserHandler)
 			})
+
+			r.Group(func(r chi.Router) {
+				r.Get("/feed", app.getUserFeedHandler)
+			})
 		})
+	})
+
+	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Route not found:", r.Method, r.URL.Path)
+		http.Error(w, "custom not found", http.StatusNotFound)
 	})
 
 	return r
