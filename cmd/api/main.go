@@ -6,6 +6,8 @@ import (
 	"os/signal"
 	"syscall"
 
+	"go.uber.org/zap"
+
 	"github.com/go-playground/validator/v10"
 	_ "github.com/swaggo/http-swagger/v2"
 	"github.com/uday510/go-crud-app/internal/db"
@@ -58,31 +60,41 @@ func main() {
 		env: env.GetString("ENV", "development"),
 	}
 
-	log.Printf("configuration loaded: addr=%s, db_addr=%s", cfg.addr, cfg.db.addr)
+	// Logger
+	logger := zap.Must(zap.NewProduction()).Sugar()
+	defer func(logger *zap.SugaredLogger) {
+		err := logger.Sync()
+		if err != nil {
 
-	log.Println("initializing database connection...")
+		}
+	}(logger)
+
+	logger.Info("configuration loaded: addr=%s, db_addr=%s", cfg.addr, cfg.db.addr)
+
+	logger.Info("initializing database connection...")
 
 	database, err := db.New(cfg.db.addr, cfg.db.maxOpenConns, cfg.db.maxIdleConns, cfg.db.maxIdleTime)
 	if err != nil {
-		log.Fatalf("failed to create database pool: %v", err)
+		logger.Error("failed to create database pool: %v", err)
 	}
-	log.Println("database connection pool established")
+	logger.Info("database connection pool established")
 
 	defer func() {
-		log.Println("closing database connection...")
+		logger.Info("closing database connection...")
 		if err := database.Close(); err != nil {
-			log.Printf("error closing database connection: %v", err)
+			logger.Error("error closing database connection: %v", err)
 		} else {
-			log.Println("database connection closed")
+			logger.Info("database connection closed")
 		}
 	}()
 
-	log.Println("initializing storage layer...")
+	logger.Info("initializing storage layer...")
 	newStorage := store.NewStorage(database)
 
 	app := &application{
 		config: cfg,
 		store:  newStorage,
+		logger: logger,
 	}
 
 	// Graceful shutdown handling
@@ -90,12 +102,12 @@ func main() {
 		stop := make(chan os.Signal, 1)
 		signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
 		sig := <-stop
-		log.Printf("received signal: %s. initiating shutdown...", sig)
+		logger.Info("received signal: %s. initiating shutdown...", sig)
 		os.Exit(0)
 	}()
 
 	mux := app.mount()
 
-	log.Printf("starting HTTP server on %s", cfg.addr)
-	log.Fatal(app.run(mux))
+	logger.Info("starting HTTP server on %s", cfg.addr)
+	logger.Info(app.run(mux))
 }
