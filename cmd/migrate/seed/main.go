@@ -1,10 +1,11 @@
 package main
 
 import (
+	"log"
+
 	"github.com/uday510/go-crud-app/internal/db"
 	"github.com/uday510/go-crud-app/internal/env"
 	store2 "github.com/uday510/go-crud-app/internal/store"
-	"log"
 )
 
 func main() {

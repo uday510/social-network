@@ -2,10 +2,11 @@ package db
 
 import (
 	"context"
-	"github.com/brianvoe/gofakeit/v6"
-	"github.com/uday510/go-crud-app/internal/store"
 	"log"
 	"time"
+
+	"github.com/brianvoe/gofakeit/v6"
+	"github.com/uday510/go-crud-app/internal/store"
 )
 
 func Seed(store store.Storage) error {

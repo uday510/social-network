@@ -1,14 +1,16 @@
 package main
 
 import (
-	"github.com/go-playground/validator/v10"
-	"github.com/uday510/go-crud-app/internal/db"
-	"github.com/uday510/go-crud-app/internal/env"
-	"github.com/uday510/go-crud-app/internal/store"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/go-playground/validator/v10"
+	_ "github.com/swaggo/http-swagger/v2"
+	"github.com/uday510/go-crud-app/internal/db"
+	"github.com/uday510/go-crud-app/internal/env"
+	"github.com/uday510/go-crud-app/internal/store"
 )
 
 var Validate *validator.Validate
@@ -19,11 +21,34 @@ func init() {
 
 const version = "0.0.1"
 
+//	@title			SocialNetwork API
+//	@version		1.0
+//	@description	This is a social network server.
+//	@termsOfService	http://swagger.io/terms/
+
+//	@contact.name	API Support
+//	@contact.url	http://www.swagger.io/support
+//	@contact.email	support@swagger.io
+
+//	@license.name	Apache 2.0
+//	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
+
+//	@BasePath					/api/v1
+//	@securityDefinitions.basic	BasicAuth
+
+//	@externalDocs.description	OpenAPI
+//	@externalDocs.url			https://swagger.io/resources/open-api/
+//	@securityDefinitions.apikey	ApiKeyAuth
+//	@in							header
+//	@name						Authorization
+//	@description
+
 func main() {
 	log.Println("loading configuration...")
 
 	cfg := config{
-		addr: env.GetString("ADDR", ":8080"),
+		addr:   env.GetString("ADDR", ":8080"),
+		apiURL: env.GetString("EXTERNAL_URL", "localhost:8080"),
 		db: dbConfig{
 			addr:         env.GetString("DB_ADDR", "postgres://user:password@localhost/social?sslmode=disable"),
 			maxOpenConns: env.GetInt("DB_MAX_OPEN_CONNECTIONS", 30),
