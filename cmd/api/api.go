@@ -6,6 +6,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/go-chi/cors"
+
 	"github.com/uday510/go-crud-app/internal/mailer"
 
 	"go.uber.org/zap/zapcore"
@@ -54,6 +56,15 @@ type sendGridConfig struct {
 
 func (app *application) mount() http.Handler {
 	r := chi.NewRouter()
+
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"https://*", "http://*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: false,
+		MaxAge:           300,
+	}))
 
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
