@@ -7,6 +7,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/uday510/go-crud-app/internal/mailer"
+
 	"go.uber.org/zap"
 
 	"github.com/go-playground/validator/v10"
@@ -24,34 +26,15 @@ func init() {
 
 const version = "0.0.1"
 
-//	@title			SocialNetwork API
-//	@version		1.0
-//	@description	This is a social network server.
-//	@termsOfService	http://swagger.io/terms/
-
-//	@contact.name	API Support
-//	@contact.url	http://www.swagger.io/support
-//	@contact.email	support@swagger.io
-
-//	@license.name	Apache 2.0
-//	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
-
-//	@BasePath					/api/v1
-//	@securityDefinitions.basic	BasicAuth
-
-//	@externalDocs.description	OpenAPI
-//	@externalDocs.url			https://swagger.io/resources/open-api/
-//	@securityDefinitions.apikey	ApiKeyAuth
-//	@in							header
-//	@name						Authorization
-//	@description
+// Swagger annotations omitted for brevity...
 
 func main() {
 	log.Println("loading configuration...")
 
 	cfg := config{
-		addr:   env.GetString("ADDR", ":8080"),
-		apiURL: env.GetString("EXTERNAL_URL", "localhost:8080"),
+		addr:        env.GetString("ADDR", ":8080"),
+		apiURL:      env.GetString("EXTERNAL_URL", "localhost:8080"),
+		frontendURL: env.GetString("FRONTEND_URL", "http://localhost:4000"),
 		db: dbConfig{
 			addr:         env.GetString("DB_ADDR", "postgres://user:password@localhost/social?sslmode=disable"),
 			maxOpenConns: env.GetInt("DB_MAX_OPEN_CONNECTIONS", 30),
@@ -60,33 +43,39 @@ func main() {
 		},
 		env: env.GetString("ENV", "development"),
 		mail: mailConfig{
-			expiry: time.Hour * 24 * 3, // 3 days
+			expiry:    time.Hour * 24 * 3,
+			fromEmail: env.GetString("FROM_EMAIL", ""),
+			sendGrid: sendGridConfig{
+				apiKey: env.GetString("SENDGRID_API_KEY", ""),
+			},
 		},
 	}
 
-	// Logger
-	logger := zap.Must(zap.NewProduction()).Sugar()
-	defer func(logger *zap.SugaredLogger) {
-		err := logger.Sync()
-		if err != nil {
+	// Use color logger in development
+	var zapLogger *zap.Logger
+	if cfg.env == "development" {
+		zapLogger = NewDevLogger()
+	} else {
+		zapLogger = zap.Must(zap.NewProduction())
+	}
+	logger := zapLogger.Sugar()
+	defer func() {
+		_ = logger.Sync()
+	}()
 
-		}
-	}(logger)
-
-	logger.Info("configuration loaded: addr=%s, db_addr=%s", cfg.addr, cfg.db.addr)
+	logger.Infow("configuration loaded", "addr", cfg.addr, "db_addr", cfg.db.addr)
 
 	logger.Info("initializing database connection...")
-
 	database, err := db.New(cfg.db.addr, cfg.db.maxOpenConns, cfg.db.maxIdleConns, cfg.db.maxIdleTime)
 	if err != nil {
-		logger.Error("failed to create database pool: %v", err)
+		logger.Fatalf("failed to create database pool: %v", err)
 	}
 	logger.Info("database connection pool established")
 
 	defer func() {
 		logger.Info("closing database connection...")
 		if err := database.Close(); err != nil {
-			logger.Error("error closing database connection: %v", err)
+			logger.Errorf("error closing database connection: %v", err)
 		} else {
 			logger.Info("database connection closed")
 		}
@@ -95,23 +84,29 @@ func main() {
 	logger.Info("initializing storage layer...")
 	newStorage := store.NewStorage(database)
 
+	mailtrap := mailer.NewSendgrid(cfg.mail.sendGrid.apiKey, cfg.mail.fromEmail)
+
 	app := &application{
 		config: cfg,
 		store:  newStorage,
 		logger: logger,
+		mailer: mailtrap,
 	}
-
-	// Graceful shutdown handling
-	go func() {
-		stop := make(chan os.Signal, 1)
-		signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
-		sig := <-stop
-		logger.Info("received signal: %s. initiating shutdown...", sig)
-		os.Exit(0)
-	}()
 
 	mux := app.mount()
 
-	logger.Info("starting HTTP server on %s", cfg.addr)
-	logger.Info(app.run(mux))
+	// Graceful shutdown
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		sig := <-stop
+		logger.Infof("received signal: %s. initiating shutdown...", sig)
+		if err := database.Close(); err != nil {
+			logger.Errorf("error closing database: %v", err)
+		}
+		os.Exit(0)
+	}()
+
+	logger.Infow("starting HTTP server", "addr", cfg.addr, "env", cfg.env)
+	logger.Fatal(app.run(mux))
 }

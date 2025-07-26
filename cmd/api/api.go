@@ -3,7 +3,12 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"time"
+
+	"github.com/uday510/go-crud-app/internal/mailer"
+
+	"go.uber.org/zap/zapcore"
 
 	"github.com/uday510/go-crud-app/docs"
 	"go.uber.org/zap"
@@ -19,6 +24,7 @@ type application struct {
 	config config
 	store  store.Storage
 	logger *zap.SugaredLogger
+	mailer mailer.Client
 }
 
 type dbConfig struct {
@@ -29,15 +35,21 @@ type dbConfig struct {
 }
 
 type config struct {
-	addr   string
-	db     dbConfig
-	env    string
-	apiURL string
-	mail   mailConfig
+	addr        string
+	db          dbConfig
+	env         string
+	apiURL      string
+	mail        mailConfig
+	frontendURL string
 }
 
 type mailConfig struct {
-	expiry time.Duration
+	expiry    time.Duration
+	fromEmail string
+	sendGrid  sendGridConfig
+}
+type sendGridConfig struct {
+	apiKey string
 }
 
 func (app *application) mount() http.Handler {
@@ -46,7 +58,7 @@ func (app *application) mount() http.Handler {
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Recoverer)
-	r.Use(middleware.Logger)
+	r.Use(ZapLogger(app.logger.Desugar()))
 
 	r.Use(middleware.Timeout(60 * time.Second))
 
@@ -116,4 +128,39 @@ func (app *application) run(mux http.Handler) error {
 		"env", app.config.env,
 	)
 	return srv.ListenAndServe()
+}
+
+func ZapLogger(logger *zap.Logger) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			start := time.Now()
+
+			ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
+
+			defer func() {
+				logger.Info("HTTP request",
+					zap.String("method", r.Method),
+					zap.String("path", r.URL.Path),
+					zap.Int("status", ww.Status()),
+					zap.Int("size", ww.BytesWritten()),
+					zap.String("duration", time.Since(start).Truncate(time.Microsecond).String()),
+					zap.String("remote", r.RemoteAddr),
+					zap.String("user_agent", r.UserAgent()),
+					zap.String("request_id", middleware.GetReqID(r.Context())),
+				)
+			}()
+
+			next.ServeHTTP(ww, r)
+		})
+	}
+}
+
+func NewDevLogger() *zap.Logger {
+	cfg := zap.NewDevelopmentEncoderConfig()
+	cfg.EncodeLevel = zapcore.CapitalColorLevelEncoder
+
+	consoleEncoder := zapcore.NewConsoleEncoder(cfg)
+	core := zapcore.NewCore(consoleEncoder, zapcore.Lock(os.Stdout), zap.DebugLevel)
+
+	return zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
 }
