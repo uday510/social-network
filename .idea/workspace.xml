@@ -5,13 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a0ec1aab-d5bf-4efc-b65b-41fc378b44b6" name="Changes" comment="add codes">
+      <change afterPath="$PROJECT_DIR$/cmd/api/auth.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/main" beforeDir="false" afterPath="$PROJECT_DIR$/bin/main" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/api/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/api/api.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/api/errors.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/api/errors.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/api/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/api/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/api/users.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/api/users.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/migrate/seed/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/migrate/seed/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/db/seed.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/db/seed.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/store/storage.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/store/storage.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/store/users.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/store/users.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -92,7 +96,10 @@
       "postgresql"
     ],
     "com.intellij.ide.scratch.LRUPopupBuilder$1/": [
-      "PostgreSQL"
+      "PostgreSQL",
+      "MongoDB",
+      "MySQL",
+      "TSQL"
     ]
   }
 }]]></component>

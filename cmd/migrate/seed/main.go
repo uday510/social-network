@@ -24,9 +24,7 @@ func main() {
 	log.Println("Initialized storage layer")
 
 	log.Println("Seeding database...")
-	err = db.Seed(store)
-	if err != nil {
-		log.Fatalf("Seeding failed: %v", err)
-	}
+	db.Seed(store, conn)
+
 	log.Println("Database seeding complete.")
 }

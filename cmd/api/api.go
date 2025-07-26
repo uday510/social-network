@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
@@ -34,6 +33,11 @@ type config struct {
 	db     dbConfig
 	env    string
 	apiURL string
+	mail   mailConfig
+}
+
+type mailConfig struct {
+	expiry time.Duration
 }
 
 func (app *application) mount() http.Handler {
@@ -64,6 +68,7 @@ func (app *application) mount() http.Handler {
 		})
 
 		r.Route("/users", func(r chi.Router) {
+			r.Put("/activate/{token}", app.activeUserHandler)
 
 			r.Route("/{userID}", func(r chi.Router) {
 				r.Use(app.userContextMiddleware)
@@ -77,10 +82,15 @@ func (app *application) mount() http.Handler {
 				r.Get("/feed", app.getUserFeedHandler)
 			})
 		})
+
+		// public routes
+		r.Route("/auth", func(r chi.Router) {
+			r.Post("/user", app.registerUserHandler)
+		})
 	})
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
-		log.Println("Route not found:", r.Method, r.URL.Path)
+		app.logger.Infof("Route not found: method=%s path=%s", r.Method, r.URL.Path)
 		http.Error(w, "custom not found", http.StatusNotFound)
 	})
 
