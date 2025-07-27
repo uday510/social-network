@@ -40,7 +40,6 @@ func (app *application) getUserHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	user, err := app.getUser(ctx, userID)
 	if err != nil {
-		app.logger.Info("user not found")
 		app.unauthorizedErrorResponse(w, r, err)
 		return
 	}
