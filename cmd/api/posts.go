@@ -42,31 +42,33 @@ const postCtx postKey = "post"
 func (app *application) createPostHandler(w http.ResponseWriter, r *http.Request) {
 	var payload CreatePostPayload
 	if err := readJSON(w, r, &payload); err != nil {
-		app.internalServerError(w, r, err)
+		app.internalServerErrorResponse(w, r, err)
 		return
 	}
 
 	if err := Validate.Struct(payload); err != nil {
-		app.badRequestError(w, r, err)
+		app.badRequestErrorResponse(w, r, err)
 		return
 	}
+
+	user := getUserFromCtx(r)
 
 	post := &store.Post{
 		Title:   payload.Title,
 		Content: payload.Content,
 		Tags:    payload.Tags,
-		UserID:  1,
+		UserID:  user.ID,
 	}
 
 	ctx := r.Context()
 
 	if err := app.store.Posts.Create(ctx, post); err != nil {
-		app.badRequestError(w, r, err)
+		app.badRequestErrorResponse(w, r, err)
 		return
 	}
 
 	if err := app.jsonResponse(w, http.StatusCreated, post); err != nil {
-		app.badRequestError(w, r, err)
+		app.badRequestErrorResponse(w, r, err)
 		return
 	}
 }
@@ -90,14 +92,14 @@ func (app *application) getPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	comments, err := app.store.Comments.GetByPostID(ctx, post.ID)
 	if err != nil {
-		app.internalServerError(w, r, err)
+		app.internalServerErrorResponse(w, r, err)
 		return
 	}
 
 	post.Comments = comments
 
 	if err := app.jsonResponse(w, http.StatusOK, post); err != nil {
-		app.internalServerError(w, r, err)
+		app.internalServerErrorResponse(w, r, err)
 		return
 	}
 }
@@ -122,9 +124,9 @@ func (app *application) deletePostHandler(w http.ResponseWriter, r *http.Request
 	if err := app.store.Posts.Delete(ctx, post.ID); err != nil {
 		switch {
 		case errors.Is(err, store.ErrNotFound):
-			app.notFoundError(w, r, err)
+			app.notFoundErrorResponse(w, r, err)
 		default:
-			app.internalServerError(w, r, err)
+			app.internalServerErrorResponse(w, r, err)
 		}
 		return
 	}
@@ -132,17 +134,33 @@ func (app *application) deletePostHandler(w http.ResponseWriter, r *http.Request
 	w.WriteHeader(http.StatusNoContent)
 }
 
+// UpdatePost godoc
+//
+//	@Summary		Updates a post
+//	@Description	Updates a post by ID
+//	@Tags			posts
+//	@Accept			json
+//	@Produce		json
+//	@Param			id		path		int					true	"Post ID"
+//	@Param			payload	body		UpdatePostPayload	true	"Post payload"
+//	@Success		200		{object}	store.Post
+//	@Failure		400		{object}	error
+//	@Failure		401		{object}	error
+//	@Failure		404		{object}	error
+//	@Failure		500		{object}	error
+//	@Security		ApiKeyAuth
+//	@Router			/posts/{id} [patch]
 func (app *application) updatePostHandler(w http.ResponseWriter, r *http.Request) {
 	post := getPostFromCtx(r)
 
 	var payload UpdatePostPayload
 	if err := readJSON(w, r, &payload); err != nil {
-		app.badRequestError(w, r, err)
+		app.badRequestErrorResponse(w, r, err)
 		return
 	}
 
 	if err := Validate.Struct(payload); err != nil {
-		app.internalServerError(w, r, err)
+		app.internalServerErrorResponse(w, r, err)
 		return
 	}
 
@@ -154,12 +172,12 @@ func (app *application) updatePostHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	if err := app.store.Posts.Update(r.Context(), post); err != nil {
-		app.internalServerError(w, r, err)
+		app.internalServerErrorResponse(w, r, err)
 		return
 	}
 
 	if err := app.jsonResponse(w, http.StatusOK, post); err != nil {
-		app.internalServerError(w, r, err)
+		app.internalServerErrorResponse(w, r, err)
 		return
 	}
 }
@@ -185,7 +203,7 @@ func (app *application) postsContextMiddleware(next http.Handler) http.Handler {
 		idParam := chi.URLParam(r, "postID")
 		postId, err := strconv.ParseInt(idParam, 10, 64)
 		if err != nil {
-			app.badRequestError(w, r, err)
+			app.badRequestErrorResponse(w, r, err)
 			return
 		}
 
@@ -195,9 +213,9 @@ func (app *application) postsContextMiddleware(next http.Handler) http.Handler {
 		if err != nil {
 			switch {
 			case errors.Is(err, store.ErrNotFound):
-				app.notFoundError(w, r, err)
+				app.notFoundErrorResponse(w, r, err)
 			default:
-				app.badRequestError(w, r, err)
+				app.badRequestErrorResponse(w, r, err)
 			}
 			return
 		}

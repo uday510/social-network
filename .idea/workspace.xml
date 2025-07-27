@@ -4,7 +4,38 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a0ec1aab-d5bf-4efc-b65b-41fc378b44b6" name="Changes" comment="add codes" />
+    <list default="true" id="a0ec1aab-d5bf-4efc-b65b-41fc378b44b6" name="Changes" comment="add codes">
+      <change afterPath="$PROJECT_DIR$/cmd/api/middleware.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/auth/auth.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/auth/jwt.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/store/cache/redis.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/store/cache/storage.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/store/cache/users.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/store/roles.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/main" beforeDir="false" afterPath="$PROJECT_DIR$/bin/main" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/api/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/api/api.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/api/auth.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/api/auth.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/api/errors.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/api/errors.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/api/feed.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/api/feed.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/api/health.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/api/health.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/api/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/api/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/api/posts.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/api/posts.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/api/users.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/api/users.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/migrate/migrations/000003_alter_posts.up.sql" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/migrate/migrations/000003_alter_posts.up.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/migrate/migrations/000004_alter_posts_with_tags.up.sql" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/migrate/migrations/000004_alter_posts_with_tags.up.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/migrate/migrations/000006_add_version_posts.up.sql" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/migrate/migrations/000006_add_version_posts.up.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/migrate/migrations/000012_add_activated_to_user.up.sql" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/migrate/migrations/000012_add_activated_to_user.up.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/migrate/seed/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/migrate/seed/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/docs.go" beforeDir="false" afterPath="$PROJECT_DIR$/docs/docs.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/swagger.json" beforeDir="false" afterPath="$PROJECT_DIR$/docs/swagger.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/swagger.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/docs/swagger.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/db/seed.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/db/seed.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/env/env.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/env/env.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/store/storage.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/store/storage.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/store/users.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/store/users.go" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -17,8 +48,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Dockerfile" />
-        <option value="Go File" />
         <option value="TypeScript JSX File" />
+        <option value="Go File" />
       </list>
     </option>
   </component>
@@ -55,44 +86,44 @@
     <option name="showLibraryContents" value="true" />
     <option name="showVisibilityIcons" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;DefaultGoTemplateProperty&quot;: &quot;Go File&quot;,
-    &quot;Go Build.go build github.com/uday510/go-crud-app/cmd/api.executor&quot;: &quot;Debug&quot;,
-    &quot;Go Build.go build go-crud-app.executor&quot;: &quot;Debug&quot;,
-    &quot;Go Build.main.executor&quot;: &quot;Debug&quot;,
-    &quot;Makefile Target.generate-docs.executor&quot;: &quot;Run&quot;,
-    &quot;Makefile Target.seed.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.go.modules.go.list.on.any.changes.was.set&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/uday&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;onboarding.tips.debug.path&quot;: &quot;/Users/uday/Desktop/Projects/go-crud-app/main.go&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/Users/uday/Desktop/Projects/go-crud-app/web/node_modules/typescript/lib&quot;,
-    &quot;typescript.add.unambiguous.imports.on.the.fly&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultGoTemplateProperty": "Go File",
+    "Go Build.go build github.com/uday510/go-crud-app/cmd/api.executor": "Debug",
+    "Go Build.go build go-crud-app.executor": "Debug",
+    "Go Build.main.executor": "Debug",
+    "Makefile Target.generate-docs.executor": "Run",
+    "Makefile Target.seed.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.go.formatter.settings.were.checked": "true",
+    "RunOnceActivity.go.migrated.go.modules.settings": "true",
+    "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
+    "git-widget-placeholder": "master",
+    "go.import.settings.migrated": "true",
+    "last_opened_file_path": "/Users/uday",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "onboarding.tips.debug.path": "/Users/uday/Desktop/Projects/go-crud-app/main.go",
+    "settings.editor.selected.configurable": "database.output.results",
+    "ts.external.directory.path": "/Users/uday/Desktop/Projects/go-crud-app/web/node_modules/typescript/lib",
+    "typescript.add.unambiguous.imports.on.the.fly": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;postgresql&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "postgresql"
     ],
-    &quot;com.intellij.ide.scratch.LRUPopupBuilder$1/&quot;: [
-      &quot;PostgreSQL&quot;,
-      &quot;MongoDB&quot;,
-      &quot;MySQL&quot;,
-      &quot;TSQL&quot;
+    "com.intellij.ide.scratch.LRUPopupBuilder$1/": [
+      "PostgreSQL",
+      "MongoDB",
+      "MySQL",
+      "TSQL"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/internal/store" />
@@ -173,7 +204,12 @@
     <option name="version" value="3" />
   </component>
   <component name="UnknownFeatures">
+    <option featureType="dependencySupport" implementationName="javascript:npm:react" />
+    <option featureType="dependencySupport" implementationName="executable:docker" />
     <option featureType="com.intellij.fileTypeFactory" implementationName="*.toml" />
+    <option featureType="dependencySupport" implementationName="javascript:npm:vite" />
+    <option featureType="dependencySupport" implementationName="executable:kubectl" />
+    <option featureType="dependencySupport" implementationName="executable:az" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">

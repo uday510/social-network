@@ -11,7 +11,7 @@ import (
 func main() {
 	log.Println("Starting application...")
 
-	addr := env.GetString("DB_ADDR", "postgres://user:password@localhost/social?sslmode=disable")
+	addr := env.GetString("DB_ADDR", "postgres://uday:Budd%40i1028@localhost:5432/socialnetwork?sslmode=disable")
 	log.Println("Connecting to DB...")
 
 	conn, err := db.New(addr, 3, 3, "15m")

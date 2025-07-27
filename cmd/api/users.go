@@ -14,10 +14,6 @@ type userKey string
 
 const userCtx userKey = "user"
 
-type FollowUser struct {
-	UserID int64 `json:"user_id"`
-}
-
 // GetUser godoc
 //
 //	@Summary		Fetches a user profile
@@ -33,10 +29,24 @@ type FollowUser struct {
 //	@Security		ApiKeyAuth
 //	@Router			/users/{id} [get]
 func (app *application) getUserHandler(w http.ResponseWriter, r *http.Request) {
-	user := getUserFromCtx(r)
+	userID, err := strconv.ParseInt(chi.URLParam(r, "userID"), 10, 64)
+
+	app.logger.Infof(strconv.FormatInt(userID, 10))
+	if err != nil || userID < 1 {
+		app.badRequestErrorResponse(w, r, err)
+		return
+	}
+
+	ctx := r.Context()
+	user, err := app.getUser(ctx, userID)
+	if err != nil {
+		app.logger.Info("user not found")
+		app.unauthorizedErrorResponse(w, r, err)
+		return
+	}
 
 	if err := app.jsonResponse(w, http.StatusOK, user); err != nil {
-		app.internalServerError(w, r, err)
+		app.internalServerErrorResponse(w, r, err)
 	}
 }
 
@@ -55,21 +65,20 @@ func (app *application) getUserHandler(w http.ResponseWriter, r *http.Request) {
 //	@Router			/users/{userID}/follow [put]
 func (app *application) followUserHandler(w http.ResponseWriter, r *http.Request) {
 	followerUser := getUserFromCtx(r)
-	ctx := r.Context()
-	var payload FollowUser
-
-	if err := readJSON(w, r, &payload); err != nil {
-		app.badRequestError(w, r, err)
+	followedID, err := strconv.ParseInt(chi.URLParam(r, "userID"), 10, 64)
+	if err != nil {
+		app.internalServerErrorResponse(w, r, err)
 		return
 	}
+	ctx := r.Context()
 
 	// Revert back to auth userID from ctx
-	if err := app.store.Followers.Follow(ctx, followerUser.ID, payload.UserID); err != nil {
-		app.internalServerError(w, r, err)
+	if err := app.store.Followers.Follow(ctx, followerUser.ID, followedID); err != nil {
+		app.internalServerErrorResponse(w, r, err)
 		return
 	}
 	if err := app.jsonResponse(w, http.StatusNoContent, nil); err != nil {
-		app.internalServerError(w, r, err)
+		app.internalServerErrorResponse(w, r, err)
 		return
 	}
 }
@@ -90,20 +99,24 @@ func (app *application) followUserHandler(w http.ResponseWriter, r *http.Request
 func (app *application) unFollowUserHandler(w http.ResponseWriter, r *http.Request) {
 	unfollowedUser := getUserFromCtx(r)
 	ctx := r.Context()
-	var payload FollowUser
+	unFollowedID, err := strconv.ParseInt(chi.URLParam(r, "userID"), 10, 64)
+	if err != nil {
+		app.internalServerErrorResponse(w, r, err)
+		return
+	}
 
-	if err := readJSON(w, r, &payload); err != nil {
-		app.badRequestError(w, r, err)
+	if err := readJSON(w, r, unFollowedID); err != nil {
+		app.badRequestErrorResponse(w, r, err)
 		return
 	}
 
 	// Revert back to auth userID from ctx
 	if err := app.store.Followers.Unfollow(ctx, unfollowedUser.ID, 620); err != nil {
-		app.internalServerError(w, r, err)
+		app.internalServerErrorResponse(w, r, err)
 		return
 	}
 	if err := app.jsonResponse(w, http.StatusNoContent, nil); err != nil {
-		app.internalServerError(w, r, err)
+		app.internalServerErrorResponse(w, r, err)
 		return
 	}
 }
@@ -127,10 +140,10 @@ func (app *application) activeUserHandler(w http.ResponseWriter, r *http.Request
 	if err != nil {
 		switch {
 		case errors.Is(err, store.ErrNotFound):
-			app.badRequestError(w, r, err)
+			app.badRequestErrorResponse(w, r, err)
 			return
 		default:
-			app.internalServerError(w, r, err)
+			app.internalServerErrorResponse(w, r, err)
 		}
 		return
 	}
@@ -143,7 +156,7 @@ func (app *application) userContextMiddleware(next http.Handler) http.Handler {
 		idParam := chi.URLParam(r, "userID")
 		userID, err := strconv.ParseInt(idParam, 10, 64)
 		if err != nil {
-			app.badRequestError(w, r, err)
+			app.badRequestErrorResponse(w, r, err)
 			return
 		}
 
@@ -153,9 +166,9 @@ func (app *application) userContextMiddleware(next http.Handler) http.Handler {
 		if err != nil {
 			switch {
 			case errors.Is(err, store.ErrNotFound):
-				app.notFoundError(w, r, err)
+				app.notFoundErrorResponse(w, r, err)
 			default:
-				app.badRequestError(w, r, err)
+				app.badRequestErrorResponse(w, r, err)
 			}
 			return
 		}

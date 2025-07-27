@@ -6,6 +6,9 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
+
+	"github.com/golang-jwt/jwt/v5"
 
 	"github.com/uday510/go-crud-app/internal/mailer"
 
@@ -35,16 +38,16 @@ type UserWithToken struct {
 //	@Success		201		{object}	UserWithToken		"User registered"
 //	@Failure		400		{object}	error
 //	@Failure		500		{object}	error
-//	@Router			/auth/user [post]
+//	@Router			/authentication/user [post]
 func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Request) {
 	var payload RegisterUserPayload
 	if err := readJSON(w, r, &payload); err != nil {
-		app.badRequestError(w, r, err)
+		app.badRequestErrorResponse(w, r, err)
 		return
 	}
 
 	if err := Validate.Struct(payload); err != nil {
-		app.badRequestError(w, r, err)
+		app.badRequestErrorResponse(w, r, err)
 		return
 	}
 
@@ -54,7 +57,7 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 	}
 
 	if err := user.Password.Set(payload.Password); err != nil {
-		app.internalServerError(w, r, err)
+		app.internalServerErrorResponse(w, r, err)
 		return
 	}
 
@@ -70,13 +73,13 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 	if err != nil {
 		switch {
 		case errors.Is(err, store.ErrDuplicateEmail):
-			app.badRequestError(w, r, err)
+			app.badRequestErrorResponse(w, r, err)
 			return
 		case errors.Is(err, store.ErrDuplicateUsername):
-			app.badRequestError(w, r, err)
+			app.badRequestErrorResponse(w, r, err)
 			return
 		default:
-			app.internalServerError(w, r, err)
+			app.internalServerErrorResponse(w, r, err)
 		}
 		return
 	}
@@ -106,14 +109,76 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 			app.logger.Errorw("error deleting user", "error", err)
 		}
 
-		app.internalServerError(w, r, err)
+		app.internalServerErrorResponse(w, r, err)
 		return
 	}
 
 	app.logger.Infof("Email sent with status code %v", status)
 
 	if err = app.jsonResponse(w, http.StatusCreated, userWithToken); err != nil {
-		app.internalServerError(w, r, err)
+		app.internalServerErrorResponse(w, r, err)
 		return
+	}
+}
+
+type CreateUserTokenPayload struct {
+	Email    string `json:"email" validate:"required,email,max=255"`
+	Password string `json:"password" validate:"required,min=3,max=72"`
+}
+
+// createTokenHandler godoc
+//
+//	@Summary		Creates a token
+//	@Description	Creates a token for a user
+//	@Tags			authentication
+//	@Accept			json
+//	@Produce		json
+//	@Param			payload	body		CreateUserTokenPayload	true	"User credentials"
+//	@Success		200		{string}	string					"Token"
+//	@Failure		400		{object}	error
+//	@Failure		401		{object}	error
+//	@Failure		500		{object}	error
+//	@Router			/authentication/token [post]
+func (app *application) createTokenHandler(w http.ResponseWriter, r *http.Request) {
+	var payload CreateUserTokenPayload
+	if err := readJSON(w, r, &payload); err != nil {
+		app.badRequestErrorResponse(w, r, err)
+		return
+	}
+
+	if err := Validate.Struct(payload); err != nil {
+		app.badRequestErrorResponse(w, r, err)
+		return
+	}
+
+	// fetch the user (check if user exists) from the payload
+	user, err := app.store.Users.GetByEmail(r.Context(), payload.Email)
+	if err != nil {
+		switch {
+		case errors.Is(err, store.ErrNotFound):
+			app.unauthorizedErrorResponse(w, r, err)
+			return
+		default:
+			app.internalServerErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	claims := jwt.MapClaims{
+		"sub": user.ID,
+		"exp": time.Now().Add(app.config.auth.token.exp).Unix(),
+		"iat": time.Now().Unix(),
+		"nbf": time.Now().Unix(),
+		"iss": app.config.auth.token.iss,
+		"aud": app.config.auth.token.iss,
+	}
+	token, err := app.authenticator.GenerateToken(claims)
+	if err != nil {
+		app.internalServerErrorResponse(w, r, err)
+		return
+	}
+
+	if err := app.jsonResponse(w, http.StatusCreated, token); err != nil {
+		app.internalServerErrorResponse(w, r, err)
 	}
 }

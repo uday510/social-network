@@ -35,13 +35,13 @@ func (app *application) getUserFeedHandler(w http.ResponseWriter, r *http.Reques
 	// Override defaults with query values if present
 	fq, err := fq.Parse(r)
 	if err != nil {
-		app.badRequestError(w, r, err)
+		app.badRequestErrorResponse(w, r, err)
 		return
 	}
 
 	// Validate after parsing
 	if err := Validate.Struct(fq); err != nil {
-		app.badRequestError(w, r, err)
+		app.badRequestErrorResponse(w, r, err)
 		return
 	}
 
@@ -49,13 +49,13 @@ func (app *application) getUserFeedHandler(w http.ResponseWriter, r *http.Reques
 	ctx := r.Context()
 	feed, err := app.store.Posts.GetUserFeed(ctx, int64(905), fq)
 	if err != nil {
-		app.internalServerError(w, r, err)
+		app.internalServerErrorResponse(w, r, err)
 		return
 	}
 
 	// Respond with feed
 	if err := app.jsonResponse(w, http.StatusOK, feed); err != nil {
-		app.internalServerError(w, r, err)
+		app.internalServerErrorResponse(w, r, err)
 		return
 	}
 }
